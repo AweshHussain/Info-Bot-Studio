@@ -1,0 +1,5 @@
+applications:
+  - name: watson-student-chatbot
+    memory: 256M
+    buildpack: python_buildpack
+    command: python app.py

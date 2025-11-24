@@ -1,0 +1,3020 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Student Helpdesk Chatbot - IBM Watson</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: #0a0a0f;
+      color: #ffffff;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Animated Gradient Background */
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a0b2e 25%, #2d1b4e 50%, #1a0b2e 75%, #0a0a0f 100%);
+      z-index: -2;
+    }
+
+    .gradient-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(123, 67, 255, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.1) 0%, transparent 60%);
+      z-index: -1;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% {
+        opacity: 0.8;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(123, 67, 255, 0.4);
+      border-radius: 50%;
+      animation: float 20s infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100%) translateX(100px);
+        opacity: 0;
+      }
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(123, 67, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #7b43ff, #00bfff);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .btn-login {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(123, 67, 255, 0.4);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(123, 67, 255, 0.6);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 50px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-container {
+      max-width: 1400px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .hero-content h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #ffffff 0%, #7b43ff 50%, #00bfff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-content .subtitle {
+      font-size: 1.3rem;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.8;
+      margin-bottom: 50px;
+      font-weight: 300;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 18px 45px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 10px 40px rgba(123, 67, 255, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 50px rgba(123, 67, 255, 0.6);
+    }
+
+    .btn-secondary {
+      padding: 18px 45px;
+      background: transparent;
+      border: 2px solid rgba(123, 67, 255, 0.6);
+      border-radius: 50px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(123, 67, 255, 0.2);
+      border-color: #7b43ff;
+      transform: translateY(-3px);
+    }
+
+    /* Hero 3D Card */
+    .hero-visual {
+      perspective: 1000px;
+    }
+
+    .chat-preview-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 40px;
+      border: 1px solid rgba(123, 67, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .chat-preview-card:hover {
+      transform: rotateY(5deg) rotateX(5deg);
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(123, 67, 255, 0.2);
+    }
+
+    .chat-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .chat-info h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .chat-status {
+      font-size: 0.9rem;
+      color: #00ff88;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+      }
+    }
+
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      padding: 15px 20px;
+      border-radius: 15px;
+      max-width: 85%;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.bot {
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.3), rgba(0, 191, 255, 0.3));
+      border: 1px solid rgba(123, 67, 255, 0.5);
+      align-self: flex-start;
+    }
+
+    .message.user {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      align-self: flex-end;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 100px 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(123, 67, 255, 0.2);
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      border-radius: 20px;
+      color: #7b43ff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff, #7b43ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-description {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.6);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* About Section */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .about-content {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .tech-item {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(123, 67, 255, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .tech-item:hover {
+      background: rgba(123, 67, 255, 0.1);
+      border-color: #7b43ff;
+      transform: translateX(10px);
+    }
+
+    .tech-icon {
+      font-size: 2rem;
+    }
+
+    .tech-name {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(123, 67, 255, 0.2);
+      border-radius: 25px;
+      padding: 40px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.1), rgba(0, 191, 255, 0.1));
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: #7b43ff;
+      box-shadow: 0 20px 60px rgba(123, 67, 255, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: inline-block;
+      filter: drop-shadow(0 0 20px rgba(123, 67, 255, 0.5));
+    }
+
+    .feature-card h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .feature-card p {
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+    }
+
+    /* Architecture Flow */
+    .architecture-flow {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(123, 67, 255, 0.2);
+      border-radius: 30px;
+      padding: 60px;
+      margin-top: 50px;
+    }
+
+    .flow-steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .flow-step {
+      flex: 1;
+      min-width: 150px;
+      text-align: center;
+      position: relative;
+    }
+
+    .flow-step-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 10px 30px rgba(123, 67, 255, 0.4);
+    }
+
+    .flow-step h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .flow-step p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .flow-arrow {
+      font-size: 2rem;
+      color: #7b43ff;
+      flex: 0;
+    }
+
+    /* How It Works Timeline */
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 50px auto 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(180deg, #7b43ff, #00bfff);
+    }
+
+    .timeline-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .timeline-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .timeline-content {
+      width: 45%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(123, 67, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-content:hover {
+      background: rgba(123, 67, 255, 0.1);
+      border-color: #7b43ff;
+      transform: scale(1.05);
+    }
+
+    .timeline-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      box-shadow: 0 0 30px rgba(123, 67, 255, 0.6);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .timeline-content h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .timeline-content p {
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+    }
+
+    /* Demo Section */
+    .demo-section {
+      background: rgba(123, 67, 255, 0.05);
+      border-top: 1px solid rgba(123, 67, 255, 0.2);
+      border-bottom: 1px solid rgba(123, 67, 255, 0.2);
+    }
+
+    .demo-window {
+      max-width: 900px;
+      margin: 50px auto 0;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(123, 67, 255, 0.3);
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .demo-header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(123, 67, 255, 0.2);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.red {
+      background: #ff5f57;
+    }
+
+    .dot.yellow {
+      background: #ffbd2e;
+    }
+
+    .dot.green {
+      background: #28ca42;
+    }
+
+    .demo-body {
+      padding: 40px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .demo-cta {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    /* Team Section */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .team-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(123, 67, 255, 0.3);
+      border-radius: 30px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.4s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 80px rgba(123, 67, 255, 0.4);
+      border-color: #7b43ff;
+    }
+
+    .team-avatar {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 20px 50px rgba(123, 67, 255, 0.5);
+      border: 4px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .team-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff, #7b43ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .team-role {
+      font-size: 1rem;
+      color: #00bfff;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .social-link {
+      width: 50px;
+      height: 50px;
+      background: rgba(123, 67, 255, 0.2);
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-color: transparent;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(123, 67, 255, 0.5);
+    }
+
+    /* Floating Chatbot Button */
+    .chatbot-float-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      box-shadow: 0 10px 40px rgba(123, 67, 255, 0.6);
+      z-index: 2000;
+      transition: all 0.3s ease;
+      animation: floatPulse 3s ease-in-out infinite;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chatbot-float-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 15px 50px rgba(123, 67, 255, 0.8);
+    }
+
+    @keyframes floatPulse {
+      0%, 100% {
+        transform: translateY(0);
+        box-shadow: 0 10px 40px rgba(123, 67, 255, 0.6);
+      }
+      50% {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(123, 67, 255, 0.8);
+      }
+    }
+
+    .chatbot-float-btn.active {
+      background: linear-gradient(135deg, #00bfff, #7b43ff);
+      animation: none;
+    }
+
+    /* Chatbot Modal */
+    .chatbot-modal {
+      position: fixed;
+      bottom: 120px;
+      right: 30px;
+      width: 420px;
+      height: 600px;
+      background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(30px);
+      border-radius: 25px;
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      z-index: 1999;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chatbot-modal.active {
+      display: flex;
+    }
+
+    .chatbot-header {
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.3), rgba(0, 191, 255, 0.3));
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(123, 67, 255, 0.3);
+    }
+
+    .chatbot-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chatbot-header-avatar {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chatbot-header-info h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .chatbot-header-info p {
+      font-size: 0.85rem;
+      color: #00ff88;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chatbot-header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-btn {
+      width: 35px;
+      height: 35px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .header-btn:hover {
+      background: rgba(123, 67, 255, 0.3);
+      border-color: #7b43ff;
+      transform: scale(1.1);
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .chatbot-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chatbot-messages::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .chatbot-messages::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 10px;
+    }
+
+    .chat-message {
+      display: flex;
+      gap: 10px;
+      animation: messageSlide 0.3s ease;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-message.user {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .message-avatar.bot {
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+    }
+
+    .message-avatar.user {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .message-content {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 15px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .chat-message.bot .message-content {
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.3), rgba(0, 191, 255, 0.3));
+      border: 1px solid rgba(123, 67, 255, 0.5);
+      border-radius: 15px 15px 15px 5px;
+    }
+
+    .chat-message.user .message-content {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px 15px 5px 15px;
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 5px;
+    }
+
+    /* Chatbot Input */
+    .chatbot-input-area {
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(123, 67, 255, 0.3);
+    }
+
+    .input-attachments {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .attachment-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(123, 67, 255, 0.2);
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .attachment-remove {
+      cursor: pointer;
+      color: #ff5f57;
+      font-weight: bold;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-btn {
+      width: 38px;
+      height: 38px;
+      background: rgba(123, 67, 255, 0.2);
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      position: relative;
+    }
+
+    .input-btn:hover {
+      background: rgba(123, 67, 255, 0.4);
+      border-color: #7b43ff;
+      transform: scale(1.1);
+    }
+
+    .input-btn input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(123, 67, 255, 0.3);
+      border-radius: 20px;
+      padding: 10px 15px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+      resize: none;
+      max-height: 100px;
+      min-height: 38px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      border-color: #7b43ff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 20px rgba(123, 67, 255, 0.6);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Settings Modal */
+    .settings-modal {
+      position: fixed;
+      bottom: 120px;
+      right: 30px;
+      width: 350px;
+      background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(30px);
+      border-radius: 25px;
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      z-index: 1999;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+
+    .settings-modal.active {
+      display: flex;
+    }
+
+    .settings-header {
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.3), rgba(0, 191, 255, 0.3));
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(123, 67, 255, 0.3);
+    }
+
+    .settings-header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .settings-body {
+      padding: 25px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(123, 67, 255, 0.2);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .setting-description {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.5;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .toggle-switch.active {
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-color: transparent;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle-switch.active .toggle-slider {
+      left: 26px;
+    }
+
+    .voice-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 15px;
+      height: 15px;
+      background: #00ff88;
+      border-radius: 50%;
+      border: 2px solid rgba(10, 10, 15, 0.98);
+      animation: voicePulse 1.5s ease-in-out infinite;
+      display: none;
+    }
+
+    .voice-indicator.active {
+      display: block;
+    }
+
+    @keyframes voicePulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+      }
+    }
+
+    /* Login Modal */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .login-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .login-modal {
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(123, 67, 255, 0.4);
+      border-radius: 30px;
+      padding: 50px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 90%;
+      overflow-y: auto;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      animation: slideDown 0.4s ease;
+      position: relative;
+    }
+
+    .login-modal::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .login-modal::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .login-modal::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 10px;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .login-close:hover {
+      background: rgba(123, 67, 255, 0.3);
+      border-color: #7b43ff;
+      transform: rotate(90deg);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 20px 50px rgba(123, 67, 255, 0.5);
+      border: 4px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .login-header h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffffff, #7b43ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .login-header p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-group label {
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(123, 67, 255, 0.3);
+      border-radius: 15px;
+      padding: 15px 20px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      border-color: #7b43ff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 20px rgba(123, 67, 255, 0.3);
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: #7b43ff;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #7b43ff;
+    }
+
+    .forgot-password {
+      color: #7b43ff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .forgot-password:hover {
+      color: #00bfff;
+      text-decoration: underline;
+    }
+
+    .login-submit {
+      padding: 16px;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(123, 67, 255, 0.4);
+      margin-top: 10px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .login-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(123, 67, 255, 0.6);
+    }
+
+    .login-submit:active {
+      transform: translateY(-1px);
+    }
+
+    .login-divider {
+      text-align: center;
+      margin: 25px 0;
+      position: relative;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.9rem;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: rgba(123, 67, 255, 0.3);
+    }
+
+    .login-divider::before {
+      left: 0;
+    }
+
+    .login-divider::after {
+      right: 0;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 25px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.95rem;
+    }
+
+    .signup-link {
+      color: #7b43ff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .signup-link:hover {
+      color: #00bfff;
+      text-decoration: underline;
+    }
+
+    .login-roles {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .role-option {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(123, 67, 255, 0.3);
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .role-option:hover {
+      background: rgba(123, 67, 255, 0.1);
+      border-color: #7b43ff;
+    }
+
+    .role-option.selected {
+      background: linear-gradient(135deg, rgba(123, 67, 255, 0.3), rgba(0, 191, 255, 0.3));
+      border-color: #7b43ff;
+      box-shadow: 0 5px 20px rgba(123, 67, 255, 0.4);
+    }
+
+    .role-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .role-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .error-message {
+      background: rgba(255, 87, 87, 0.2);
+      border: 1px solid rgba(255, 87, 87, 0.5);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: #ff5f57;
+      font-size: 0.9rem;
+      display: none;
+      animation: shake 0.5s ease;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-10px);
+      }
+      75% {
+        transform: translateX(10px);
+      }
+    }
+
+    .success-message {
+      background: rgba(0, 255, 136, 0.2);
+      border: 1px solid rgba(0, 255, 136, 0.5);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: #00ff88;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.5);
+      border-top: 1px solid rgba(123, 67, 255, 0.2);
+      padding: 60px 50px 30px;
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7b43ff, #00bfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: #7b43ff;
+    }
+
+    .footer-bottom {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(123, 67, 255, 0.2);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 60px;
+      }
+
+      .hero-content h1 {
+        font-size: 3.5rem;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 20px 30px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .btn-login {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+
+      .login-modal {
+        padding: 30px 20px;
+        margin: 10px;
+        border-radius: 20px;
+        max-height: 95%;
+      }
+
+      .login-header {
+        margin-bottom: 25px;
+      }
+
+      .login-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+        margin-bottom: 15px;
+      }
+
+      .login-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .login-header p {
+        font-size: 0.9rem;
+      }
+
+      .login-close {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+        top: 15px;
+        right: 15px;
+      }
+
+      .login-form {
+        gap: 20px;
+      }
+
+      .form-group label {
+        font-size: 0.9rem;
+      }
+
+      .form-input {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
+
+      .login-submit {
+        padding: 14px;
+        font-size: 1rem;
+      }
+
+      .login-roles {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .role-option {
+        padding: 12px;
+      }
+
+      .role-icon {
+        font-size: 1.5rem;
+      }
+
+      .form-options {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .hero {
+        padding: 100px 30px 60px;
+      }
+
+      .hero-content h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-content .subtitle {
+        font-size: 1.1rem;
+      }
+
+      section {
+        padding: 60px 30px;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-steps {
+        flex-direction: column;
+      }
+
+      .flow-arrow {
+        transform: rotate(90deg);
+      }
+
+      .timeline::before {
+        left: 30px;
+      }
+
+      .timeline-content {
+        width: calc(100% - 80px);
+        margin-left: auto;
+      }
+
+      .timeline-number {
+        left: 30px;
+      }
+
+      .timeline-item:nth-child(even) {
+        flex-direction: row;
+      }
+
+      /* Mobile Chatbot */
+      .chatbot-modal {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+      }
+
+      .settings-modal {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 25px 25px 0 0;
+      }
+
+      .chatbot-float-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="gradient-bg"></div>
+  <div class="gradient-overlay"></div>
+  <div class="particles">
+   <div class="particle" style="width: 4px; height: 4px; left: 10%; animation-delay: 0s;"></div>
+   <div class="particle" style="width: 6px; height: 6px; left: 20%; animation-delay: 2s;"></div>
+   <div class="particle" style="width: 3px; height: 3px; left: 30%; animation-delay: 4s;"></div>
+   <div class="particle" style="width: 5px; height: 5px; left: 40%; animation-delay: 1s;"></div>
+   <div class="particle" style="width: 4px; height: 4px; left: 50%; animation-delay: 3s;"></div>
+   <div class="particle" style="width: 6px; height: 6px; left: 60%; animation-delay: 5s;"></div>
+   <div class="particle" style="width: 3px; height: 3px; left: 70%; animation-delay: 2.5s;"></div>
+   <div class="particle" style="width: 5px; height: 5px; left: 80%; animation-delay: 4.5s;"></div>
+   <div class="particle" style="width: 4px; height: 4px; left: 90%; animation-delay: 1.5s;"></div>
+  </div><!-- Navigation -->
+  <nav>
+   <div class="logo">
+    InfoBot Studio
+   </div>
+   <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#team">Team</a></li>
+   </ul><button class="btn-login" id="loginBtn">🔐 Student Login</button>
+  </nav><!-- Hero Section -->
+  <section class="hero">
+   <div class="hero-container">
+    <div class="hero-content">
+     <h1 id="hero-title">Smart Student Helpdesk Chatbot</h1>
+     <p class="subtitle" id="hero-subtitle">Powered by IBM Watson Assistant - Your 24/7 AI companion for academic excellence. Instant access to notes, schedules, and campus information.</p>
+     <div class="hero-buttons"><button class="btn-primary" id="hero-button">Launch Chatbot</button> <a href="#features" class="btn-secondary">Explore Features</a>
+     </div>
+    </div>
+    <div class="hero-visual">
+     <div class="chat-preview-card">
+      <div class="chat-header">
+       <div class="chat-avatar">
+        ��
+       </div>
+       <div class="chat-info">
+        <h3>Watson Assistant</h3>
+        <div class="chat-status"><span class="status-dot"></span> <span>Online</span>
+        </div>
+       </div>
+      </div>
+      <div class="chat-messages">
+       <div class="message bot">
+        Hi! I'm your student helpdesk assistant. How can I help you today?
+       </div>
+       <div class="message user">
+        I need Data Structures notes for Sem 3
+       </div>
+       <div class="message bot">
+        📚 Found your notes! Semester 3 - Data Structures. Downloading now...
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- About Section -->
+  <section id="about">
+   <div class="container">
+    <div class="section-header"><span class="section-tag">About The Project</span>
+     <h2 class="section-title" id="about-heading">Intelligent AI Solution</h2>
+     <p class="section-description" id="about-description">A cutting-edge chatbot built on IBM Cloud infrastructure, combining Watson Assistant's natural language processing with robust data management to deliver instant, accurate responses to student queries.</p>
+    </div>
+    <div class="about-grid">
+     <div class="about-content">
+      <p>This project revolutionizes student support by leveraging IBM Watson's advanced AI capabilities. Students can instantly access academic resources, exam schedules, fee information, and faculty contacts through natural conversation.</p>
+      <p style="margin-top: 20px;">Built with scalability and reliability in mind, the system integrates Cloudant DB for efficient data management and Cloud Object Storage for seamless document retrieval, ensuring students get the information they need, whenever they need it.</p>
+     </div>
+     <div class="tech-stack">
+      <div class="tech-item"><span class="tech-icon">🤖</span>
+       <div>
+        <div class="tech-name">
+         Watson Assistant
+        </div><small style="color: rgba(255,255,255,0.5);">AI &amp; NLP Engine</small>
+       </div>
+      </div>
+      <div class="tech-item"><span class="tech-icon">🗄️</span>
+       <div>
+        <div class="tech-name">
+         Cloudant DB
+        </div><small style="color: rgba(255,255,255,0.5);">NoSQL Database</small>
+       </div>
+      </div>
+      <div class="tech-item"><span class="tech-icon">�����️</span>
+       <div>
+        <div class="tech-name">
+         Cloud Storage
+        </div><small style="color: rgba(255,255,255,0.5);">Document Repository</small>
+       </div>
+      </div>
+      <div class="tech-item"><span class="tech-icon">⚙️</span>
+       <div>
+        <div class="tech-name">
+         Node.js Backend
+        </div><small style="color: rgba(255,255,255,0.5);">API Layer</small>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- Features Section -->
+  <section id="features">
+   <div class="container">
+    <div class="section-header"><span class="section-tag">Capabilities</span>
+     <h2 class="section-title" id="features-heading">Powerful Features</h2>
+     <p class="section-description">Everything students need, available instantly through AI-powered conversation</p>
+    </div>
+    <div class="features-grid">
+     <div class="feature-card">
+      <div class="feature-icon">
+       📚
+      </div>
+      <h3>Smart Notes Finder</h3>
+      <p>Search and download semester-specific notes by subject, topic, or keyword. Organized and always accessible.</p>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       📅
+      </div>
+      <h3>Exam Scheduler</h3>
+      <p>Get real-time exam timetables, important dates, and automated reminders. Never miss a deadline.</p>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       💳
+      </div>
+      <h3>Fee Management</h3>
+      <p>Instant access to fee structures, payment deadlines, and transaction history. Stay on top of finances.</p>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       👨‍🏫
+      </div>
+      <h3>Faculty Directory</h3>
+      <p>Find faculty contacts, office hours, and department information quickly. Connect with ease.</p>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       🎯
+      </div>
+      <h3>Placement Portal</h3>
+      <p>Access placement opportunities, company schedules, and career resources. Build your future.</p>
+     </div>
+     <div class="feature-card">
+      <div class="feature-icon">
+       🌐
+      </div>
+      <h3>24/7 Availability</h3>
+      <p>Round-the-clock assistance powered by AI. Get answers anytime, anywhere, on any device.</p>
+     </div>
+    </div>
+   </div>
+  </section><!-- Architecture Section -->
+  <section id="architecture">
+   <div class="container">
+    <div class="section-header"><span class="section-tag">System Design</span>
+     <h2 class="section-title">Architecture Flow</h2>
+     <p class="section-description">Built on enterprise-grade IBM Cloud infrastructure for reliability and scalability</p>
+    </div>
+    <div class="architecture-flow">
+     <div class="flow-steps">
+      <div class="flow-step">
+       <div class="flow-step-icon">
+        🎤
+       </div>
+       <h4>Watson Assistant</h4>
+       <p>NLP &amp; Intent Recognition</p>
+      </div>
+      <div class="flow-arrow">
+       →
+      </div>
+      <div class="flow-step">
+       <div class="flow-step-icon">
+        🔗
+       </div>
+       <h4>Webhook API</h4>
+       <p>Request Gateway</p>
+      </div>
+      <div class="flow-arrow">
+       →
+      </div>
+      <div class="flow-step">
+       <div class="flow-step-icon">
+        ⚙️
+       </div>
+       <h4>Node.js Backend</h4>
+       <p>Business Logic</p>
+      </div>
+      <div class="flow-arrow">
+       →
+      </div>
+      <div class="flow-step">
+       <div class="flow-step-icon">
+        🗄️
+       </div>
+       <h4>Cloudant DB</h4>
+       <p>Data Layer</p>
+      </div>
+      <div class="flow-arrow">
+       →
+      </div>
+      <div class="flow-step">
+       <div class="flow-step-icon">
+        ��️
+       </div>
+       <h4>Cloud Storage</h4>
+       <p>File Repository</p>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- How It Works -->
+  <section>
+   <div class="container">
+    <div class="section-header"><span class="section-tag">Process</span>
+     <h2 class="section-title">How It Works</h2>
+     <p class="section-description">Four simple steps to get instant answers</p>
+    </div>
+    <div class="timeline">
+     <div class="timeline-item">
+      <div class="timeline-content">
+       <h3>Student Query</h3>
+       <p>Student asks a question in natural language through the chat interface. No specific commands needed - just ask naturally.</p>
+      </div>
+      <div class="timeline-number">
+       1
+      </div>
+      <div style="width: 45%;"></div>
+     </div>
+     <div class="timeline-item">
+      <div style="width: 45%;"></div>
+      <div class="timeline-number">
+       2
+      </div>
+      <div class="timeline-content">
+       <h3>AI Processing</h3>
+       <p>Watson Assistant analyzes the query using advanced NLP to understand intent, context, and extract relevant parameters.</p>
+      </div>
+     </div>
+     <div class="timeline-item">
+      <div class="timeline-content">
+       <h3>Data Retrieval</h3>
+       <p>Backend system fetches relevant information from Cloudant DB and retrieves documents from Cloud Object Storage.</p>
+      </div>
+      <div class="timeline-number">
+       3
+      </div>
+      <div style="width: 45%;"></div>
+     </div>
+     <div class="timeline-item">
+      <div style="width: 45%;"></div>
+      <div class="timeline-number">
+       4
+      </div>
+      <div class="timeline-content">
+       <h3>Instant Response</h3>
+       <p>Chatbot delivers accurate answers with notes, schedules, or information in seconds, formatted for easy reading.</p>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- Demo Section -->
+  <section class="demo-section" id="demo">
+   <div class="container">
+    <div class="section-header"><span class="section-tag">Interactive Demo</span>
+     <h2 class="section-title">Try It Now</h2>
+     <p class="section-description">Experience the chatbot in action - ask anything!</p>
+    </div>
+    <div class="demo-window">
+     <div class="demo-header">
+      <div class="window-dots">
+       <div class="dot red"></div>
+       <div class="dot yellow"></div>
+       <div class="dot green"></div>
+      </div>
+      <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">
+       Student Helpdesk Chat
+      </div>
+      <div style="width: 60px;"></div>
+     </div>
+     <div class="demo-body">
+      <div class="message bot">
+       👋 Hello! I'm your AI-powered student assistant. I can help you with notes, exam schedules, fees, faculty contacts, and placement information. What would you like to know?
+      </div>
+      <div class="message user">
+       Show me the exam timetable for this semester
+      </div>
+      <div class="message bot">
+       📅 Here's your Semester 5 exam timetable:<br><br>
+        • Data Science - Dec 15, 10:00 AM<br>
+        • Cloud Computing - Dec 18, 2:00 PM<br>
+        • AI &amp; ML - Dec 22, 10:00 AM<br><br>
+        Would you like me to send reminders?
+      </div>
+     </div>
+    </div>
+    <div class="demo-cta"><button class="btn-primary">Start Chatting Now</button>
+    </div>
+   </div>
+  </section><!-- Team Section -->
+  <section id="team">
+   <div class="container">
+    <div class="section-header"><span class="section-tag">Our Team</span>
+     <h2 class="section-title">Meet The Developers</h2>
+     <p class="section-description">The talented minds behind the innovation</p>
+    </div>
+    <div class="team-grid">
+     <div class="team-card">
+      <div class="team-avatar">
+       👨‍💻
+      </div>
+      <h3 class="team-name">Minhaj Hussain</h3>
+      <p class="team-role">Full Stack Developer</p>
+      <div class="social-links"><a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub"> 💻 </a> <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn"> 💼 </a>
+      </div>
+     </div>
+     <div class="team-card">
+      <div class="team-avatar">
+       👨‍💻
+      </div>
+      <h3 class="team-name">Awesh Hussain</h3>
+      <p class="team-role">Backend Developer</p>
+      <div class="social-links"><a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub"> 💻 </a> <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn"> 💼 </a>
+      </div>
+     </div>
+     <div class="team-card">
+      <div class="team-avatar">
+       👨‍💻
+      </div>
+      <h3 class="team-name">Muntassar Rehan</h3>
+      <p class="team-role">AI/ML Engineer</p>
+      <div class="social-links"><a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub"> 💻 </a> <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn"> 💼 </a>
+      </div>
+     </div>
+     <div class="team-card">
+      <div class="team-avatar">
+       👨‍💻
+      </div>
+      <h3 class="team-name">SM Zaid Iqbal</h3>
+      <p class="team-role">Cloud Architect</p>
+      <div class="social-links"><a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub"> 💻 </a> <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn"> 💼 </a>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section><!-- Footer -->
+  <footer>
+   <div class="footer-content">
+    <div class="footer-logo">
+     WATSON AI
+    </div>
+    <p style="color: rgba(255,255,255,0.5); margin-bottom: 20px;">Smart Student Helpdesk Chatbot</p>
+    <div class="footer-links"><a href="#about" class="footer-link">About</a> <a href="#features" class="footer-link">Features</a> <a href="#architecture" class="footer-link">Architecture</a> <a href="#demo" class="footer-link">Demo</a> <a href="#team" class="footer-link">Team</a> <a href="https://www.ibm.com/cloud" target="_blank" rel="noopener noreferrer" class="footer-link">IBM Cloud</a>
+    </div>
+    <div class="footer-bottom">
+     <p>© 2024 Smart Student Helpdesk Chatbot. Powered by IBM Watson Assistant, Cloudant DB &amp; Cloud Object Storage.</p>
+     <p style="margin-top: 10px;">Built with ❤️ for students everywhere</p>
+    </div>
+   </div>
+  </footer><!-- Login Modal Overlay -->
+  <div class="login-overlay" id="loginOverlay">
+   <div class="login-modal">
+    <div class="login-close" id="loginClose">
+     ✕
+    </div>
+    <div class="login-header">
+     <div class="login-logo">
+      🎓
+     </div>
+     <h2>Student Portal Login</h2>
+     <p>Access your personalized AI assistant</p>
+    </div>
+    <form class="login-form" id="loginForm">
+     <div class="error-message" id="errorMessage"></div>
+     <div class="success-message" id="successMessage"></div>
+     <div class="login-roles">
+      <div class="role-option selected" data-role="student">
+       <div class="role-icon">
+        👨‍🎓
+       </div>
+       <div class="role-name">
+        Student
+       </div>
+      </div>
+      <div class="role-option" data-role="faculty">
+       <div class="role-icon">
+        👨‍🏫
+       </div>
+       <div class="role-name">
+        Faculty
+       </div>
+      </div>
+     </div>
+     <div class="form-group"><label for="studentId"> <span>🆔</span> <span>Student ID / Faculty ID</span> </label> <input type="text" id="studentId" class="form-input" placeholder="Enter your ID (e.g., STU2024001)" required>
+     </div>
+     <div class="form-group"><label for="email"> <span>📧</span> <span>College Email</span> </label> <input type="email" id="email" class="form-input" placeholder="your.email@college.edu" required>
+     </div>
+     <div class="form-group"><label for="password"> <span>🔒</span> <span>Password</span> </label>
+      <div class="password-wrapper"><input type="password" id="password" class="form-input" placeholder="Enter your password" required> <button type="button" class="password-toggle" id="passwordToggle">👁️</button>
+      </div>
+     </div>
+     <div class="form-options"><label class="remember-me"> <input type="checkbox" id="rememberMe"> <span>Remember me</span> </label> <a href="#" class="forgot-password">Forgot Password?</a>
+     </div><button type="submit" class="login-submit"> 🚀 Login to Dashboard </button>
+     <div class="login-divider">
+      OR
+     </div>
+     <div class="login-footer">
+      Don't have an account? <a href="#" class="signup-link">Request Access</a>
+     </div>
+    </form>
+   </div>
+  </div><!-- Floating Chatbot Button -->
+  <div class="chatbot-float-btn" id="chatbotFloatBtn"><span class="voice-indicator" id="voiceIndicator"></span> 🤖
+  </div><!-- Chatbot Modal -->
+  <div class="chatbot-modal" id="chatbotModal">
+   <header class="chatbot-header">
+    <div class="chatbot-header-left">
+     <div class="chatbot-header-avatar">
+      🤖
+     </div>
+     <div class="chatbot-header-info">
+      <h4>Watson Assistant</h4>
+      <p><span class="status-dot"></span> <span>Online</span></p>
+     </div>
+    </div>
+    <div class="chatbot-header-actions">
+     <div class="header-btn" id="settingsBtn" title="Settings">
+      ⚙️
+     </div>
+     <div class="header-btn" id="closeChatBtn" title="Close">
+      ✕
+     </div>
+    </div>
+   </header>
+   <main class="chatbot-messages" id="chatbotMessages">
+    <div class="chat-message bot">
+     <div class="message-avatar bot">
+      🤖
+     </div>
+     <div>
+      <div class="message-content">
+       Hi! I'm your Watson AI assistant. I can help you with notes, exam schedules, fees, faculty contacts, and more. How can I assist you today?
+      </div>
+      <div class="message-time">
+       Just now
+      </div>
+     </div>
+    </div>
+   </main>
+   <div class="chatbot-input-area">
+    <div class="input-attachments" id="attachmentsList"></div>
+    <div class="input-wrapper">
+     <div class="input-actions"><label class="input-btn" title="Attach Image"> 📷 <input type="file" accept="image/*" id="imageInput"> </label> <label class="input-btn" title="Attach File"> 📎 <input type="file" id="fileInput"> </label>
+      <div class="input-btn" id="voiceBtn" title="Voice Input">
+       🎤
+      </div>
+     </div><textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea> <button class="send-btn" id="sendBtn" title="Send Message">➤</button>
+    </div>
+   </div>
+  </div><!-- Settings Modal -->
+  <div class="settings-modal" id="settingsModal">
+   <header class="settings-header">
+    <h3>⚙️ Settings</h3>
+    <div class="header-btn" id="closeSettingsBtn" title="Close">
+     ✕
+    </div>
+   </header>
+   <div class="settings-body">
+    <div class="setting-item">
+     <div class="setting-info">
+      <div class="setting-title">
+       Voice Activation
+      </div>
+      <div class="setting-description">
+       Enable Siri-like voice commands to interact with the chatbot
+      </div>
+     </div>
+     <div class="toggle-switch" id="voiceToggle">
+      <div class="toggle-slider"></div>
+     </div>
+    </div>
+    <div class="setting-item">
+     <div class="setting-info">
+      <div class="setting-title">
+       Sound Effects
+      </div>
+      <div class="setting-description">
+       Play sound notifications for new messages
+      </div>
+     </div>
+     <div class="toggle-switch" id="soundToggle">
+      <div class="toggle-slider"></div>
+     </div>
+    </div>
+    <div class="setting-item">
+     <div class="setting-info">
+      <div class="setting-title">
+       Auto-scroll
+      </div>
+      <div class="setting-description">
+       Automatically scroll to new messages
+      </div>
+     </div>
+     <div class="toggle-switch active" id="scrollToggle">
+      <div class="toggle-slider"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      hero_title: "Smart Student Helpdesk Chatbot",
+      hero_subtitle: "Powered by IBM Watson Assistant - Your 24/7 AI companion for academic excellence. Instant access to notes, schedules, and campus information.",
+      hero_button: "Launch Chatbot",
+      about_heading: "Intelligent AI Solution",
+      about_description: "A cutting-edge chatbot built on IBM Cloud infrastructure, combining Watson Assistant's natural language processing with robust data management to deliver instant, accurate responses to student queries.",
+      features_heading: "Powerful Features",
+      developer_name: "Minhaj Hussain",
+      developer_title: "Full Stack Developer & AI Enthusiast",
+      background_color: "#0a0a0f",
+      primary_gradient: "#7b43ff",
+      secondary_gradient: "#00bfff",
+      accent_color: "#00ff88",
+      text_color: "#ffffff",
+      font_family: "Poppins",
+      font_size: 16
+    };
+
+    async function onConfigChange(config) {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      const heroButton = document.getElementById('hero-button');
+      const aboutHeading = document.getElementById('about-heading');
+      const aboutDescription = document.getElementById('about-description');
+      const featuresHeading = document.getElementById('features-heading');
+      const developerName = document.getElementById('developer-name');
+      const developerTitle = document.getElementById('developer-title');
+
+      if (heroTitle) heroTitle.textContent = config.hero_title || defaultConfig.hero_title;
+      if (heroSubtitle) heroSubtitle.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+      if (heroButton) heroButton.textContent = config.hero_button || defaultConfig.hero_button;
+      if (aboutHeading) aboutHeading.textContent = config.about_heading || defaultConfig.about_heading;
+      if (aboutDescription) aboutDescription.textContent = config.about_description || defaultConfig.about_description;
+      if (featuresHeading) featuresHeading.textContent = config.features_heading || defaultConfig.features_heading;
+      if (developerName) developerName.textContent = config.developer_name || defaultConfig.developer_name;
+      if (developerTitle) developerTitle.textContent = config.developer_title || defaultConfig.developer_title;
+
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const primaryGradient = config.primary_gradient || defaultConfig.primary_gradient;
+      const secondaryGradient = config.secondary_gradient || defaultConfig.secondary_gradient;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+
+      document.body.style.background = backgroundColor;
+      document.body.style.color = textColor;
+
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'sans-serif';
+      document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+
+      const baseSize = config.font_size || defaultConfig.font_size;
+      document.documentElement.style.fontSize = `${baseSize}px`;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.primary_gradient || defaultConfig.primary_gradient,
+            set: (value) => {
+              config.primary_gradient = value;
+              window.elementSdk.setConfig({ primary_gradient: value });
+            }
+          },
+          {
+            get: () => config.secondary_gradient || defaultConfig.secondary_gradient,
+            set: (value) => {
+              config.secondary_gradient = value;
+              window.elementSdk.setConfig({ secondary_gradient: value });
+            }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (value) => {
+              config.accent_color = value;
+              window.elementSdk.setConfig({ accent_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["hero_title", config.hero_title || defaultConfig.hero_title],
+        ["hero_subtitle", config.hero_subtitle || defaultConfig.hero_subtitle],
+        ["hero_button", config.hero_button || defaultConfig.hero_button],
+        ["about_heading", config.about_heading || defaultConfig.about_heading],
+        ["about_description", config.about_description || defaultConfig.about_description],
+        ["features_heading", config.features_heading || defaultConfig.features_heading],
+        ["developer_name", config.developer_name || defaultConfig.developer_name],
+        ["developer_title", config.developer_title || defaultConfig.developer_title]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Login State
+    let isLoggedIn = false;
+    let currentUser = null;
+    let selectedRole = 'student';
+
+    // Chatbot State
+    let attachments = [];
+    let voiceEnabled = false;
+    let soundEnabled = false;
+    let autoScroll = true;
+    let isListening = false;
+
+    // Get DOM elements
+    const loginBtn = document.getElementById('loginBtn');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginClose = document.getElementById('loginClose');
+    const loginForm = document.getElementById('loginForm');
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const roleOptions = document.querySelectorAll('.role-option');
+    
+    const chatbotFloatBtn = document.getElementById('chatbotFloatBtn');
+    const chatbotModal = document.getElementById('chatbotModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const imageInput = document.getElementById('imageInput');
+    const fileInput = document.getElementById('fileInput');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const attachmentsList = document.getElementById('attachmentsList');
+    const voiceIndicator = document.getElementById('voiceIndicator');
+    
+    // Toggle switches
+    const voiceToggle = document.getElementById('voiceToggle');
+    const soundToggle = document.getElementById('soundToggle');
+    const scrollToggle = document.getElementById('scrollToggle');
+
+    // Login Modal Controls
+    loginBtn.addEventListener('click', () => {
+      loginOverlay.classList.add('active');
+    });
+
+    loginClose.addEventListener('click', () => {
+      loginOverlay.classList.remove('active');
+    });
+
+    // Close login when clicking outside
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) {
+        loginOverlay.classList.remove('active');
+      }
+    });
+
+    // Role Selection
+    roleOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        roleOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedRole = option.dataset.role;
+        
+        const studentIdLabel = document.querySelector('label[for="studentId"] span:last-child');
+        if (selectedRole === 'faculty') {
+          studentIdLabel.textContent = 'Faculty ID';
+          document.getElementById('studentId').placeholder = 'Enter your Faculty ID (e.g., FAC2024001)';
+        } else {
+          studentIdLabel.textContent = 'Student ID / Faculty ID';
+          document.getElementById('studentId').placeholder = 'Enter your ID (e.g., STU2024001)';
+        }
+      });
+    });
+
+    // Password Toggle
+    passwordToggle.addEventListener('click', () => {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordToggle.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        passwordToggle.textContent = '👁️';
+      }
+    });
+
+    // Login Form Submission
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const studentId = document.getElementById('studentId').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      // Hide previous messages
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+
+      // Basic validation
+      if (!studentId || !email || !password) {
+        showError('Please fill in all fields');
+        return;
+      }
+
+      if (!email.includes('@')) {
+        showError('Please enter a valid college email');
+        return;
+      }
+
+      // Simulate login (in real app, this would call an API)
+      const submitBtn = loginForm.querySelector('.login-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '🔄 Logging in...';
+
+      setTimeout(() => {
+        // Successful login
+        isLoggedIn = true;
+        currentUser = {
+          id: studentId,
+          email: email,
+          role: selectedRole,
+          name: selectedRole === 'student' ? 'Student' : 'Faculty Member'
+        };
+
+        showSuccess('Login successful! Redirecting...');
+
+        setTimeout(() => {
+          loginOverlay.classList.remove('active');
+          loginForm.reset();
+          submitBtn.disabled = false;
+          submitBtn.textContent = '🚀 Login to Dashboard';
+          
+          // Update UI for logged-in user
+          updateUIForLoggedInUser();
+          
+          // Show welcome message in chatbot
+          chatbotModal.classList.add('active');
+          chatbotFloatBtn.classList.add('active');
+          
+          const welcomeMsg = `Welcome back, ${currentUser.name}! 🎉 Your ${selectedRole} dashboard is now active. How can I assist you today?`;
+          addBotMessage(welcomeMsg);
+        }, 1500);
+      }, 1500);
+    });
+
+    function showError(message) {
+      errorMessage.textContent = '❌ ' + message;
+      errorMessage.classList.add('show');
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 4000);
+    }
+
+    function showSuccess(message) {
+      successMessage.textContent = '✅ ' + message;
+      successMessage.classList.add('show');
+    }
+
+    function updateUIForLoggedInUser() {
+      loginBtn.textContent = '👤 ' + currentUser.id;
+      loginBtn.style.background = 'rgba(0, 255, 136, 0.2)';
+      loginBtn.style.borderColor = '#00ff88';
+    }
+
+    // Toggle chatbot modal
+    chatbotFloatBtn.addEventListener('click', () => {
+      if (!isLoggedIn) {
+        showTempMessage('⚠️ Please login first to access the chatbot');
+        loginOverlay.classList.add('active');
+        return;
+      }
+      
+      const isActive = chatbotModal.classList.toggle('active');
+      chatbotFloatBtn.classList.toggle('active', isActive);
+      settingsModal.classList.remove('active');
+      if (isActive) {
+        chatInput.focus();
+      }
+    });
+
+    // Close chat
+    closeChatBtn.addEventListener('click', () => {
+      chatbotModal.classList.remove('active');
+      chatbotFloatBtn.classList.remove('active');
+    });
+
+    // Toggle settings
+    settingsBtn.addEventListener('click', () => {
+      const isActive = settingsModal.classList.toggle('active');
+      if (isActive) {
+        chatbotModal.classList.remove('active');
+      }
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.classList.remove('active');
+    });
+
+    // Settings toggles
+    voiceToggle.addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      voiceToggle.classList.toggle('active', voiceEnabled);
+      voiceIndicator.classList.toggle('active', voiceEnabled);
+      
+      if (voiceEnabled) {
+        addBotMessage('🎤 Voice activation enabled! You can now use voice commands.');
+      } else {
+        addBotMessage('Voice activation disabled.');
+        if (isListening) {
+          stopVoiceRecognition();
+        }
+      }
+    });
+
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundToggle.classList.toggle('active', soundEnabled);
+    });
+
+    scrollToggle.addEventListener('click', () => {
+      autoScroll = !autoScroll;
+      scrollToggle.classList.toggle('active', autoScroll);
+    });
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
+    });
+
+    // Send message on Enter (Shift+Enter for new line)
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Send button click
+    sendBtn.addEventListener('click', sendMessage);
+
+    // File attachments
+    imageInput.addEventListener('change', (e) => {
+      handleFileAttachment(e.target.files[0], '📷');
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFileAttachment(e.target.files[0], '📎');
+    });
+
+    // Voice button
+    voiceBtn.addEventListener('click', () => {
+      if (!voiceEnabled) {
+        showTempMessage('Please enable voice activation in settings first!');
+        return;
+      }
+      
+      if (isListening) {
+        stopVoiceRecognition();
+      } else {
+        startVoiceRecognition();
+      }
+    });
+
+    // Functions
+    function sendMessage() {
+      const message = chatInput.value.trim();
+      
+      if (!message && attachments.length === 0) return;
+
+      // Add user message
+      addUserMessage(message, attachments);
+
+      // Clear input
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      attachments = [];
+      attachmentsList.innerHTML = '';
+
+      // Simulate bot response
+      setTimeout(() => {
+        const response = generateBotResponse(message);
+        addBotMessage(response);
+      }, 1000);
+    }
+
+    function addUserMessage(text, files = []) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chat-message user';
+      
+      let content = '';
+      if (files.length > 0) {
+        content += files.map(f => `<div style="margin-bottom: 8px;">${f.icon} ${f.name}</div>`).join('');
+      }
+      if (text) {
+        content += text;
+      }
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar user">👤</div>
+        <div>
+          <div class="message-content">${content}</div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      `;
+      
+      chatbotMessages.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function addBotMessage(text) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chat-message bot';
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar bot">🤖</div>
+        <div>
+          <div class="message-content">${text}</div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      `;
+      
+      chatbotMessages.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function generateBotResponse(message) {
+      const lowerMsg = message.toLowerCase();
+      
+      if (lowerMsg.includes('note') || lowerMsg.includes('notes')) {
+        return '📚 I can help you find notes! Which semester and subject are you looking for?';
+      } else if (lowerMsg.includes('exam') || lowerMsg.includes('schedule') || lowerMsg.includes('timetable')) {
+        return '📅 Here\'s your upcoming exam schedule:<br><br>• Data Structures - Dec 15, 10:00 AM<br>• Cloud Computing - Dec 18, 2:00 PM<br>• AI & ML - Dec 22, 10:00 AM';
+      } else if (lowerMsg.includes('fee') || lowerMsg.includes('payment')) {
+        return '💳 Your current semester fee is $2,500. Payment deadline: Dec 10, 2024. Would you like to view the breakdown?';
+      } else if (lowerMsg.includes('faculty') || lowerMsg.includes('teacher') || lowerMsg.includes('professor')) {
+        return '👨‍🏫 Which department faculty would you like to contact? We have:<br>• Computer Science<br>• Electronics<br>• Mechanical<br>• Civil Engineering';
+      } else if (lowerMsg.includes('placement') || lowerMsg.includes('job')) {
+        return '🎯 Great! We have 5 companies visiting this month:<br>• Google - Dec 12<br>• Microsoft - Dec 15<br>• Amazon - Dec 18<br>Would you like details?';
+      } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+        return '👋 Hello! How can I assist you today? I can help with notes, exam schedules, fees, faculty contacts, and placement information.';
+      } else if (lowerMsg.includes('thanks') || lowerMsg.includes('thank you')) {
+        return '😊 You\'re welcome! Let me know if you need anything else.';
+      } else {
+        return 'I understand you\'re asking about "' + message.substring(0, 30) + '...". Could you please be more specific? I can help with notes, exams, fees, faculty contacts, and placements.';
+      }
+    }
+
+    function handleFileAttachment(file, icon) {
+      if (!file) return;
+      
+      const attachment = {
+        name: file.name,
+        icon: icon,
+        file: file
+      };
+      
+      attachments.push(attachment);
+      displayAttachments();
+    }
+
+    function displayAttachments() {
+      attachmentsList.innerHTML = attachments.map((att, index) => `
+        <div class="attachment-item">
+          <span>${att.icon} ${att.name}</span>
+          <span class="attachment-remove" onclick="removeAttachment(${index})">✕</span>
+        </div>
+      `).join('');
+    }
+
+    window.removeAttachment = function(index) {
+      attachments.splice(index, 1);
+      displayAttachments();
+    };
+
+    function startVoiceRecognition() {
+      isListening = true;
+      voiceBtn.style.background = 'linear-gradient(135deg, #7b43ff, #00bfff)';
+      voiceBtn.style.transform = 'scale(1.2)';
+      
+      showTempMessage('🎤 Listening... Speak now!');
+      
+      // Simulate voice recognition (in real implementation, use Web Speech API)
+      setTimeout(() => {
+        stopVoiceRecognition();
+        const voiceMessage = 'Show me my exam schedule';
+        chatInput.value = voiceMessage;
+        showTempMessage('✓ Voice captured: "' + voiceMessage + '"');
+      }, 3000);
+    }
+
+    function stopVoiceRecognition() {
+      isListening = false;
+      voiceBtn.style.background = '';
+      voiceBtn.style.transform = '';
+    }
+
+    function showTempMessage(text) {
+      const tempMsg = document.createElement('div');
+      tempMsg.style.cssText = `
+        position: fixed;
+        bottom: 140px;
+        right: 30px;
+        background: rgba(123, 67, 255, 0.95);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        z-index: 2001;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      `;
+      tempMsg.textContent = text;
+      document.body.appendChild(tempMsg);
+      
+      setTimeout(() => {
+        tempMsg.style.opacity = '0';
+        tempMsg.style.transform = 'translateY(-10px)';
+        tempMsg.style.transition = 'all 0.3s ease';
+        setTimeout(() => tempMsg.remove(), 300);
+      }, 2500);
+    }
+
+    function scrollToBottom() {
+      if (autoScroll) {
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }
+    }
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const heroButton = document.getElementById('hero-button');
+      const demoButton = document.querySelector('.demo-cta .btn-primary');
+      
+      if (heroButton) {
+        heroButton.addEventListener('click', () => {
+          if (!isLoggedIn) {
+            loginOverlay.classList.add('active');
+          } else {
+            chatbotModal.classList.add('active');
+            chatbotFloatBtn.classList.add('active');
+          }
+        });
+      }
+
+      if (demoButton) {
+        demoButton.addEventListener('click', () => {
+          const demoBody = document.querySelector('.demo-body');
+          const newUserMessage = document.createElement('div');
+          newUserMessage.className = 'message user';
+          newUserMessage.textContent = 'Can I get faculty contact details?';
+          demoBody.appendChild(newUserMessage);
+
+          setTimeout(() => {
+            const newBotMessage = document.createElement('div');
+            newBotMessage.className = 'message bot';
+            newBotMessage.innerHTML = '👨‍🏫 Sure! Which department faculty are you looking for? I have contacts for Computer Science, Electronics, Mechanical, and more.';
+            demoBody.appendChild(newBotMessage);
+            demoBody.scrollTop = demoBody.scrollHeight;
+          }, 1000);
+        });
+      }
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a2f98f5248b7a13',t:'MTc2Mzg4OTY5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
