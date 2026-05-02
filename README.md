@@ -48,13 +48,3 @@ The chatbot uses **IBM Watson Assistant** for natural language understanding and
 6. Backend sends reply to frontend  
 
 ---
-
-## 🔌 API Endpoint  
-
-### POST `/api/message`
-
-**Request:**
-```json
-{
-  "message": "Your query here"
-}
